@@ -1,0 +1,105 @@
+generate_thought_tree:
+  description: >
+    Given the user's hot take "{hot_take}", explore diverse perspectives.
+  expected_output: >
+    Return a JSON object containig a key for each branch perspective, specifically:
+    - consensus_perspective
+    - counterfactual_perspective
+    - nuanced_perspective
+
+    Example Output:
+    [
+      "consensus_perspective": "In single sentence, construct a point of view that describes the widely accepted view or mainstream understanding of the topic.",
+      "counterfactual_perspective": "In single sentence, construct a point of view that challenges the assumptions in the the user's hot take by proposing an opposing or alternative perspective.",
+      "nuanced_perspective": "In single sentence, construct a point of view that explores the subtleties, gray areas, or overlooked dimensions of the user's hot take."    
+    ]
+  agent: thought_tree_generator
+
+research_consensus_perspective:
+  description: >
+    Research common opinions or widely accepted views about the user's hot take `{hot_take}`.  
+    Identify supporting arguments and evidence that reinforce these mainstream perspectives.  
+    Ensure findings are relevant and up-to-date, considering the current year is 2024.  
+  expected_output: >
+    Return an array of findings with a "research" field that includes an array of relevant sources each containing:
+    - supporting_argument: 
+    - url: Direct link to the information source.
+
+    Example Output:
+    [
+      [
+        "supporting_argument": "Formatted concisely and no more than one sentence in length.",
+        "research": [
+          [
+            "title": "Title of the information source",
+            "url": "https://example.com/article",
+          ]
+        ]
+      ]
+    ]
+  agent: researcher
+  context: [generate_thought_tree]
+
+research_counterfactual_perspective:
+  description: >
+    Research sources of opposing or alternative perspectives on the user's hot take `{hot_take}`, 
+    which challenge the consensus or commonly accepted beliefs.
+    Explore "what if" scenarios or paths not typically considered and provide thought-provoking counterpoints.  
+    Make sure you find any interesting and relevant information given the current year is 2024.
+  expected_output: >
+    Return an array of findings with a "research" field that includes an array of relevant sources each containing:
+    - supporting_argument: 
+    - url: Direct link to the information source.
+
+    Example Output:
+    [
+      [
+        "supporting_argument": "Formatted concisely and no more than one sentence in length.",
+        "research": [
+          [
+            "title": "Title of the information source",
+            "url": "https://example.com/article",
+          ]
+        ]
+      ]
+    ]
+  agent: researcher
+  context: [generate_thought_tree]
+
+research_nuance_perspective:
+  description: >
+    Investigate the subtleties, dependencies, and complexities inherent in the user's hot take `{hot_take}`.  
+    Identify gray areas or less obvious aspects of the hot take that could provide deeper insights.
+    Make sure you find any interesting and relevant information given the current year is 2024.
+  expected_output: >
+    Return an array of findings with a "research" field that includes an array of relevant sources each containing:
+    - supporting_argument: 
+    - url: Direct link to the information source.
+
+    Example Output:
+    [
+      [
+        "supporting_argument": "Formatted concisely and no more than one sentence in length.",
+        "research": [
+          [
+            "title": "Title of the information source",
+            "url": "https://example.com/article",
+          ]
+        ]
+      ]
+    ]
+  agent: researcher
+  context: [generate_thought_tree]
+
+generate_report:
+  description: >
+    Present the findings to the user in a clear and engaging manner.
+  expected_output: >
+    Produce a summary report presented in table form with:
+    - A separate row for each branch in the thought tree (i.e., consensus_perspective, counterfactual_perspective, nuance_perspective), including the one line point of view.
+    - Nested rows for supporting arguments for each perspective in the thought tree.
+    - Column containing research links for each argument.
+
+    Formatted as markdown without '```'
+  agent: reporter
+  context: [generate_thought_tree, research_consensus_perspective, research_counterfactual_perspective, research_nuance_perspective]
